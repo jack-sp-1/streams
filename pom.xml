@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>BankBalance</module>
+        <module>VaryingJsonTest</module>
     </modules>
 
     <dependencies>
