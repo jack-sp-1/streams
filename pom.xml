@@ -11,6 +11,7 @@
     <modules>
         <module>BankBalance</module>
         <module>VaryingJsonTest</module>
+        <module>MultiThreaded</module>
     </modules>
 
     <dependencies>
