@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "javatype": "com.github.vash.kafka.Serialiser.Twojsonnew",
+  "properties": {
+    "name": {"type": "string"},
+    "time": {"type": "object","javaType": "java.lang.Long"},
+    "Amount":{"type": "number"}
+  }
+}
