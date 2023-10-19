@@ -1,0 +1,10 @@
+{
+"namespace":"com.github.vash.kafka.avro.types",
+"type":"record",
+"name":"One_avro_avro_1",
+"fields":[
+{"name":"first_name","type":["null","string"]},
+{"name":"time","type":["null","long"]}
+
+]
+}

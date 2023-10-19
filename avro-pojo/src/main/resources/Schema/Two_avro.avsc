@@ -1,0 +1,12 @@
+{
+"namespace":"com.github.vash.kafka.avro.types",
+"type":"record",
+"name":"Two_avro_avro_2",
+"fields":[
+
+	{ "name": "first_name", "type": "string"},
+{ "name": "time", "type": "long"},
+{ "name": "amount", "type": "int", "default": 1000 ,"doc": "amount"}
+
+]
+}

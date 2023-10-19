@@ -12,6 +12,8 @@
         <module>BankBalance</module>
         <module>VaryingJsonTest</module>
         <module>MultiThreaded</module>
+        <module>Json-for-kafka-connect</module>
+        <module>avro-pojo</module>
     </modules>
 
     <dependencies>

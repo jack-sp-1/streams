@@ -1,33 +1,23 @@
-package com.github.vash.kafka;
+package com.github.vash.kafka.avro;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.vash.kafka.Serialiser.JsonNew;
-import com.github.vash.kafka.Serialiser.OneJson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.Deserializer;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.serialization.Serializer;
+import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.connect.json.JsonDeserializer;
 import org.apache.kafka.connect.json.JsonSerializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.log4j.Logger;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.vash.kafka.avro.types.One_avro_avro_1;
 
 import java.time.Instant;
 import java.util.Properties;
-import java.util.Random;
 
 
-public class JsonTest1 {
-    private final static Logger log = Logger.getLogger(JsonTest1.class);
+public class AvroTest1 {
+    private final static Logger log = Logger.getLogger(AvroTest1.class);
     public static void main(String[] args) {
         log.info("producing 1 is starting");
         Properties properties = new Properties();
@@ -38,37 +28,50 @@ public class JsonTest1 {
         properties.put(ProducerConfig.RETRIES_CONFIG,"3");
         properties.put(ProducerConfig.LINGER_MS_CONFIG,"1");
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,StringSerializer.class.getName());
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,JsonNew.class);
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
+        properties.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://127.0.0.1:8081");
 
 
-        String topic = "Json_test";
+        String topic = "avro-test_21";
         final Serializer<JsonNode> jsonSerializer = new JsonSerializer();
         final Deserializer<JsonNode> jsonDeserializer = new JsonDeserializer();
         final Serde<JsonNode> JsonSerde = Serdes.serdeFrom(jsonSerializer,jsonDeserializer);
-        KafkaProducer<String,OneJson> kafkaProducer = new KafkaProducer<>(properties);
+        KafkaProducer<String,One_avro_avro_1> kafkaProducer = new KafkaProducer<>(properties);
         Integer i = 1;
         Integer Key = 1000;
         while(i<10000000)
         {
 
             //ObjectNode FirstJson = JsonNodeFactory.instance.objectNode();
-            OneJson FirstJson = new OneJson();
-            String name = "production"+i.toString();
+            One_avro_avro_1 FirstJson = new One_avro_avro_1();
+            String first_name = "production"+i.toString();
             Key = Key + 1;
             //FirstJson.put("name",name);
-            FirstJson.setName(name);
+            FirstJson.setFirstName(first_name);
+
             Instant now = Instant.now();
             //FirstJson.put("time", now.toString());
             FirstJson.setTime(now.toEpochMilli());
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode  jsonNode = objectMapper.valueToTree(FirstJson.toString());
-            log.info(jsonNode.toString());
+            //log.info(jsonNode.toString());
 
-            kafkaProducer.send(new ProducerRecord<String,OneJson>(topic, Key.toString(), FirstJson));
+            kafkaProducer.send(new ProducerRecord<String, One_avro_avro_1>(topic, Key.toString(), FirstJson),
+                    new Callback() {
+                        @Override public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                            if(e == null){
+                                System.out.println("success");
+                                System.out.println(recordMetadata.toString());
+                            }
+                            else{
+                                e.printStackTrace();
+                            }
+                        }
+                    });
             i = i + 1;
             Key = Key + 1;
             try {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
